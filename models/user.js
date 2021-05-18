@@ -3,38 +3,41 @@ const { Schema } = mongoose
 const { createHmac } = require('crypto')
 const { v4: uuidv4 } = require('uuid')
 
-const userSchema = new Schema({
-  name: {
-    type: String,
-    maxlen: 30,
-    required: true,
-    trim: true,
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      maxlen: 30,
+      required: true,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      maxlen: 30,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
+    encry_password: {
+      type: String,
+      required: true,
+    },
+    salt: String,
+    role: {
+      type: Number,
+      default: 0,
+    },
+    purchases: {
+      type: Array,
+      default: [],
+    },
   },
-  lastName: {
-    type: String,
-    maxlen: 30,
-    trim: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-    unique: true,
-  },
-  encry_password: {
-    type: String,
-    required: true,
-  },
-  salt: String,
-  role: {
-    type: Number,
-    default: 0,
-  },
-  purchases: {
-    type: Array,
-    default: [],
-  },
-})
+  { timestamps: true }
+)
 userSchema
   .virtual('password')
   .set(function (password) {
@@ -45,7 +48,7 @@ userSchema
   .get(function () {
     return this._password
   })
-userSchema.method = {
+userSchema.methods = {
   authenticate: function (plainpassword) {
     return this.securePassword(plainpassword) === this.encry_password
   },
